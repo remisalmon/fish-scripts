@@ -2,9 +2,15 @@
 
 alias python python3.8
 
-python -m venv venv
+if test (count $argv) -eq 0
+    set VENV "venv"
+else
+    set VENV "$argv[1]"
+end
 
-source venv/bin/activate.fish
+python -m venv $VENV
+
+source {$VENV}/bin/activate.fish
 
 python -m pip install -U pip setuptools
 
