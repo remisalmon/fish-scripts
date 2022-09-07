@@ -1,22 +1,20 @@
 #!/usr/bin/env fish
 
 if test (count $argv) -eq 0
-    echo 'usage: docker-clean \'regex\''
+    echo "usage: docker-clean.fish regex"
     exit 1
 end
 
-set REGEX "$argv[1]"
-
-set IDS (
+set IMAGES (
     docker images \
-    | string match -e -i -r $REGEX \
-    | string replace -a -r ' +' ' ' \
-    | string split -f 3 ' '
+    | string match -e -r $argv[1] \
+    | string replace -a -r " +" " " \
+    | string split -f 3 " "
 )
 
-if test -z "$IDS"
-    echo 'No images found'
+if test -z "$IMAGES"
+    echo "no images found"
     exit 0
 end
 
-docker image rm $IDS
+docker image rm $IMAGES

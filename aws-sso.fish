@@ -11,7 +11,7 @@ set AWS_ACCESS_TOKEN (echo $json_web_token | jq -r '.accessToken')
 set AWS_ROLE_NAME    (aws configure get sso_role_name --profile $AWS_PROFILE)
 set AWS_ACCOUNT_ID   (aws configure get sso_account_id --profile $AWS_PROFILE)
 
-set credentials (
+set role_credentials (
     aws sso get-role-credentials --region $AWS_REGION \
                                  --role-name $AWS_ROLE_NAME  \
                                  --account-id $AWS_ACCOUNT_ID \
@@ -19,8 +19,8 @@ set credentials (
     | jq '.roleCredentials'
 )
 
-set -Ux AWS_ACCESS_KEY_ID     (echo $credentials | jq -r '.accessKeyId')
-set -Ux AWS_SECRET_ACCESS_KEY (echo $credentials | jq -r '.secretAccessKey')
-set -Ux AWS_SESSION_TOKEN     (echo $credentials | jq -r '.sessionToken')
+set -Ux AWS_ACCESS_KEY_ID     (echo $role_credentials | jq -r '.accessKeyId')
+set -Ux AWS_SECRET_ACCESS_KEY (echo $role_credentials | jq -r '.secretAccessKey')
+set -Ux AWS_SESSION_TOKEN     (echo $role_credentials | jq -r '.sessionToken')
 
-echo 'Credentials set. Expiration: '(echo $json_web_token | jq -r '.expiresAt')
+echo "AWS SSO role credentials set. Expiration: "(echo $json_web_token | jq -r '.expiresAt')

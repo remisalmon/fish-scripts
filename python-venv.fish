@@ -1,14 +1,14 @@
 #!/usr/bin/env fish
 
-alias python python3.8
+set PYTHON_VERSION "3.8"
 
 if test (count $argv) -eq 0
     set VENV "venv"
 else
-    set VENV "$argv[1]"
+    set VENV $argv[1]
 end
 
-python -m venv $VENV
+python{$PYTHON_VERSION} -m venv $VENV
 
 source {$VENV}/bin/activate.fish
 
