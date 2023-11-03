@@ -1,8 +1,13 @@
 #!/usr/bin/env fish
 
-set AWS_PROFILE "default"
+if test (count $argv) -ne 1
+    echo "usage: aws-sso.fish profile"
+    exit 1
+end
 
-aws sso login --profile $AWS_PROFILE
+set AWS_PROFILE $argv[1]
+
+aws sso login --profile $AWS_PROFILE || exit 1
 
 set json_web_token (jq '.' (ls -t ~/.aws/sso/cache/*.json | head -n 1))
 
@@ -22,5 +27,6 @@ set role_credentials (
 set -Ux AWS_ACCESS_KEY_ID     (echo $role_credentials | jq -r '.accessKeyId')
 set -Ux AWS_SECRET_ACCESS_KEY (echo $role_credentials | jq -r '.secretAccessKey')
 set -Ux AWS_SESSION_TOKEN     (echo $role_credentials | jq -r '.sessionToken')
+set -Ux AWS_REGION            $AWS_REGION
 
 echo "AWS SSO role credentials set. Expiration: "(echo $json_web_token | jq -r '.expiresAt')
