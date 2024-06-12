@@ -1,16 +1,16 @@
 #!/usr/bin/env fish
 
 if test (count $argv) -eq 0
-    set FILE "script.sh"
+    set file "script.sh"
 else
-    set FILE $argv[1]
+    set file $argv[1]
 end
 
-if test -e $FILE
-    echo $FILE" already exists"
+if test -e $file
+    echo $file" already exists"
     exit 1
 end
 
-echo -e "#!/usr/bin/env bash\n" > $FILE
+echo -e "#!/usr/bin/env bash\n" > $file
 
-chmod +x $FILE
+chmod +x $file

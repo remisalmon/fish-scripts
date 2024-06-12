@@ -24,9 +24,9 @@ set role_credentials (
     | jq '.roleCredentials'
 )
 
+set -Ux AWS_REGION            $AWS_REGION
 set -Ux AWS_ACCESS_KEY_ID     (echo $role_credentials | jq -r '.accessKeyId')
 set -Ux AWS_SECRET_ACCESS_KEY (echo $role_credentials | jq -r '.secretAccessKey')
 set -Ux AWS_SESSION_TOKEN     (echo $role_credentials | jq -r '.sessionToken')
-set -Ux AWS_REGION            $AWS_REGION
 
 echo "AWS SSO role credentials set. Expiration: "(echo $json_web_token | jq -r '.expiresAt')
