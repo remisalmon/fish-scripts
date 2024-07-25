@@ -1,16 +1,16 @@
 #!/usr/bin/env fish
 
-set version "3.11"
+set python_version "3.11"
 
 if test (count $argv) -eq 0
-    set venv "venv"
+    set venv_name "venv"
 else
-    set venv $argv[1]
+    set venv_name $argv[1]
 end
 
-python{$version} -m venv $venv
+python{$python_version} -m venv $venv_name
 
-source {$venv}/bin/activate.fish
+source {$venv_name}/bin/activate.fish || exit 1
 
 python -m pip install -U pip setuptools
 
