@@ -12,10 +12,10 @@ if test (count $IMAGES) -eq 0
     exit 0
 end
 
-echo -e -s $IMAGES"\n"
+echo -s {$IMAGES}\n
 
 read -P "clean [y/n]? " promt
 
 if string match -q -i "y" $promt
-    docker image rm -f (echo -e -s -n $IMAGES"\n" | string replace -a -r " +" " " | string split -f 3 " ")
+    docker image rm -f (echo -s -n {$IMAGES}\n | string replace -a -r " +" " " | string split -f 3 " ")
 end
