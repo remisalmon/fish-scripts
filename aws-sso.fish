@@ -1,17 +1,18 @@
 #!/usr/bin/env fish
 
 if test (count $argv) -ne 1
-    echo "usage: aws-sso.fish profile"
-    exit 1
+    echo "usage: aws-sso.fish profile" && exit 1
 end
 
-set AWS_PROFILE $argv[1]
+set -g AWS_PROFILE $argv[1]
 
-if not aws sts get-caller-identity &> /dev/null
-    aws sso login --profile $AWS_PROFILE
+function set_credentials
+    set -g credentials (aws configure export-credentials --profile $AWS_PROFILE)
 end
 
-set credentials (aws configure export-credentials --profile $AWS_PROFILE) ||  exit 1
+if not set_credentials
+    aws sso login --profile $AWS_PROFILE && set_credentials || exit 1
+end
 
 set -Ux AWS_REGION            (aws configure get region --profile $AWS_PROFILE)
 set -Ux AWS_ACCESS_KEY_ID     (echo $credentials | jq -r '.AccessKeyId')
