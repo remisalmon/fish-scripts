@@ -19,4 +19,4 @@ set -Ux AWS_ACCESS_KEY_ID     (echo $credentials | jq -r '.AccessKeyId')
 set -Ux AWS_SECRET_ACCESS_KEY (echo $credentials | jq -r '.SecretAccessKey')
 set -Ux AWS_SESSION_TOKEN     (echo $credentials | jq -r '.SessionToken')
 
-echo -e "\nAWS credentials exported. Expiration: "(echo $credentials | jq -r '.Expiration')"\n"
+echo "AWS credentials exported. Expiration: "(echo $credentials | jq -r '.Expiration')
