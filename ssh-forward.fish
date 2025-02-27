@@ -26,6 +26,8 @@ open http://localhost:{$port}
 while true
     if not jobs -q $ssh_pid
         echo "ssh job "$ssh_pid" is dead (RIP)"
+
+        exit 1
     end
 
     sleep 1s
