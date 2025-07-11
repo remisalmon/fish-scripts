@@ -28,8 +28,14 @@ if test -z $response
     exit 1
 end
 
-echo $response | jq -r '.candidates[0].content.parts[0].text' | string collect | head -n -1 | tail -n +2
-
 duckdb (status dirname)/nano-ai.db \
     -c "create table if not exists logs (created_at timestamp default current_timestamp, model varchar, prompt varchar, response json);" \
     -c "insert into logs (model, prompt, response) values(\$\$"$model"\$\$, \$\$"$prompt"\$\$, \$\$"$response"\$\$);" &
+
+set response (echo $response | jq -r '.candidates[0].content.parts[0].text' | string collect)
+
+if string match -q "```*```" $response
+    echo $response | head -n -1 | tail -n +2
+else
+    echo $response
+end
