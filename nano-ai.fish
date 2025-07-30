@@ -1,5 +1,7 @@
 #!/usr/bin/env fish
 
+set max_time (math "60 * 5")
+
 set model "gemini-2.5-flash"
 # set model "gemini-2.5-pro"
 
@@ -18,7 +20,7 @@ set contents (string trim $data" "$prompt)
 set response (
     curl https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$GEMINI_API_KEY} \
     -s \
-    -m 50 \
+    -m $max_time \
     -H 'Content-Type: application/json' \
     -d '{"system_instruction": {"parts": [{"text": "'{$system_instruction}'"}]}, "contents": [{"parts": [{"text": "'{$contents}'"}]}]}' \
     | string collect
