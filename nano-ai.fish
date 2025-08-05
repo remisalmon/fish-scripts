@@ -17,6 +17,8 @@ set data (timeout 0.5 cat | string join "\n" | string escape -n || echo "")
 
 set contents (string trim $data" "$prompt)
 
+set tic (date +%s)
+
 set response (
     curl https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$GEMINI_API_KEY} \
     -s \
@@ -26,13 +28,17 @@ set response (
     | string collect
 )
 
+set toc (date +%s)
+
+set response_time (math $toc" - "$tic)
+
 if test -z $response
     exit 1
 end
 
 duckdb (status dirname)/nano-ai.db \
-    -c "create table if not exists logs (created_at timestamp default current_timestamp, model varchar, prompt varchar, response json);" \
-    -c "insert into logs (model, prompt, response) values(\$\$"$model"\$\$, \$\$"$prompt"\$\$, \$\$"$response"\$\$);" &
+    -c "create table if not exists logs (created_at timestamp default current_timestamp, model varchar, prompt varchar, response json, response_time integer);" \
+    -c "insert into logs (model, prompt, response, response_time) values(\$\$"$model"\$\$, \$\$"$prompt"\$\$, \$\$"$response"\$\$, \$\$"$response_time"\$\$);" &
 
 set response (echo $response | jq -r '.candidates[0].content.parts[0].text' | string collect)
 
