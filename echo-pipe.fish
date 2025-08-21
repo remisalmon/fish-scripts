@@ -13,7 +13,7 @@
 # set pipe (cat | string join "\n")
 
 # Option 4 (also works with no pipe)
-set pipe (timeout 0.5s cat | string join "\n" || echo "")
+set pipe (timeout 0.5s cat | string join "\n" | string collect || echo "")
 
-echo "argv="(string join " " $argv)
+echo "argv="(string join " " $argv | string collect || echo "")
 echo "pipe="$pipe
