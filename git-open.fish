@@ -5,6 +5,7 @@ if not git rev-parse
 end
 
 set log "/tmp/git-open-"(basename (git rev-parse --show-toplevel))".log"
+set editor (git config get core.editor)
 
 # files with name match
 set files (git ls-files | string match -i -e (string join "*" $argv))
@@ -33,4 +34,4 @@ end
 
 echo -s -n $data\n | sort -n & # debug
 
-nano (echo -s -n $data\n | sort -n -r | head -n 1 | string split -f 2 " ")
+$editor (echo -s -n $data\n | sort -n -r | head -n 1 | string split -f 2 " ")
