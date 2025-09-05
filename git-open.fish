@@ -15,14 +15,14 @@ if test (count $files) -eq 0
     set files (git grep -i -l (string join ".*" $argv))
 end
 
-# files with no match
+set files (echo -s -n $files\n | grep -v -i -E "(archives|artifacts)/")
+
 if test (count $files) -eq 0
     exit 1
-end
 
-# files with single match
-if test (count $files) -eq 1
+else if test (count $files) -eq 1
     $editor $files[1]
+
 else
     if not test -e $log
         or test (git log --oneline --max-count=1 | string split -f 1 " ") != (head -n 1 $log | string split -f 1 " ")
