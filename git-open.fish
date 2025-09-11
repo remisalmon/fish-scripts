@@ -21,22 +21,22 @@ if test (count $files) -eq 0
     exit 1
 
 else if test (count $files) -eq 1
+    echo $files
+
     $editor $files[1]
 
 else
-    if not test -e $log
-        or test (git log --oneline --max-count=1 | string split -f 1 " ") != (head -n 1 $log | string split -f 1 " ")
+    if test (git log --oneline --name-only --max-count=1 | string split -f 1 " ") != (head -n 1 <?$log | string split -f 1 " " || echo "")
         git log --oneline --name-only >$log
     end
 
-    set data
-
-    for file in $files
-        set n (string match -g -r "(^|/)"(basename $file) < $log | count) # is (grep -E "(^|/)"(basename $file) $log | count)
-        set -a data $n" "$file
+    for i in (seq 1 (count $files))
+        set f $files[$i]
+        set n (string match -g -r "(^|/)"(basename $f) <$log | count) # is (grep -E "(^|/)"(basename $f) $log | count)
+        set files[$i] $n" "$f
     end
 
-    echo -s -n $data\n | sort -n -r & # debug
+    echo -s -n $files\n | sort -n -r
 
-    $editor (echo -s -n $data\n | sort -n -r | head -n 1 | string split -f 2 " ")
+    $editor (echo -s -n $files\n | sort -n -r | head -n 1 | string split -f 2 " ")
 end
