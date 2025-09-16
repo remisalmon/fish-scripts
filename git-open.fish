@@ -26,7 +26,7 @@ else if test (count $files) -eq 1
     $editor $files[1]
 
 else
-    if test (git log --oneline --name-only --max-count=1 | string split -f 1 " ") != (head -n 1 <?$log | string split -f 1 " " || echo "")
+    if test (git log --oneline --max-count=1 | string split -f 1 " ") != (head -n 1 <?$log | string split -f 1 " " || echo "")
         git log --oneline --name-only >$log
     end
 
