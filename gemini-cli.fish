@@ -20,11 +20,13 @@ set contents (string trim $data" "$prompt)
 set tic (date +%s)
 
 set response (
-    curl https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$GEMINI_API_KEY} \
+    curl https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent \
     -s \
     -m $max_time \
     -H 'Content-Type: application/json' \
-    -d '{"system_instruction": {"parts": [{"text": "'{$system_instruction}'"}]}, "contents": [{"parts": [{"text": "'{$contents}'"}]}]}' \
+    -H 'x-goog-api-key: '$GEMINI_API_KEY \
+    -X POST \
+    -d '{"system_instruction": {"parts": [{"text": "'$system_instruction'"}]}, "contents": [{"parts": [{"text": "'$contents'"}]}]}' \
     | string collect
 )
 
