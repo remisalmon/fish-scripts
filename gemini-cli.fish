@@ -5,17 +5,24 @@ set max_time (math "60 * 5")
 set model "gemini-2.5-flash"
 # set model "gemini-2.5-pro"
 
-set system_instruction "return only one code block without examples or explanations"
-
-set prompt (string join " " $argv)
+set prompt (string join " " $argv | string escape -n)
 
 if test -z $prompt
     exit 1
 end
 
-set data (timeout 0.5 cat | string join "\n" | string escape -n || echo "")
+# set data (timeout 0.5 cat | base64 -w 0)
+set data (timeout 0.5 cat | string join "\n" | string escape -n)
 
-set contents (string trim $data" "$prompt)
+set contents '{"text": "'$prompt'"}'
+
+if test -z $data
+    set system_instruction "return a code block without examples or explanations"
+else
+    set system_instruction "return the given text as a code block edited without examples or explanations"
+    # set contents '{"inline_data": {"mime_type": "text/plain", "data": "'$data'"}}, '$contents
+    set contents '{"text": "'$data'"}, '$contents
+end
 
 set tic (date +%s)
 
@@ -26,7 +33,7 @@ set response (
     -H 'Content-Type: application/json' \
     -H 'x-goog-api-key: '$GEMINI_API_KEY \
     -X POST \
-    -d '{"system_instruction": {"parts": [{"text": "'$system_instruction'"}]}, "contents": [{"parts": [{"text": "'$contents'"}]}]}' \
+    -d '{"system_instruction": {"parts": [{"text": "'$system_instruction'"}]}, "contents": [{"parts": ['$contents']}]}' \
     | string collect
 )
 
