@@ -27,7 +27,12 @@ else if test (count $files) -eq 1
 
 else
     if test (git log --oneline --max-count=1 | string split -f 1 " ") != (head -n 1 <?$log | string split -f 1 " " || echo "")
+        echo "saving "$log
+
         git log --oneline --name-only >$log
+
+    else
+        echo "using "$log
     end
 
     for i in (seq 1 (count $files))
@@ -36,6 +41,7 @@ else
         set files[$i] $n" "$f
     end
 
+    echo "candidates:"
     echo -s -n $files\n | sort -n -r
 
     $editor (echo -s -n $files\n | sort -n -r | head -n 1 | string split -f 2 " ")
