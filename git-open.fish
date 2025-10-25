@@ -4,45 +4,27 @@ if not git rev-parse
     exit 1
 end
 
-set log "/tmp/git-open-"(basename (git rev-parse --show-toplevel))".log"
+set pattern (string join ".*" $argv)
 set editor (git config get core.editor)
+set files (git ls-files | string match -i -e -r $pattern)
 
-# files with name match
-set files (git ls-files | string match -i -e (string join "*" $argv))
-
-# files with content match
 if test (count $files) -eq 0
-    set files (git grep -i -l (string join ".*" $argv))
+    set files (git grep -i -l $pattern)
 end
 
 set files (echo -s -n $files\n | grep -v -i -E "(archives|artifacts)/")
 
 if test (count $files) -eq 0
     exit 1
-
-else if test (count $files) -eq 1
-    echo $files
-
-    $editor $files[1]
-
-else
-    if test (git log --oneline --max-count=1 | string split -f 1 " ") != (head -n 1 <?$log | string split -f 1 " " || echo "")
-        echo "saving "$log
-
-        git log --oneline --name-only >$log
-
-    else
-        echo "using "$log
-    end
-
-    for i in (seq 1 (count $files))
-        set f $files[$i]
-        set n (string match -g -r "(^|/)"(basename $f) <$log | count) # is (grep -E "(^|/)"(basename $f) $log | count)
-        set files[$i] $n" "$f
-    end
-
-    echo "candidates:"
-    echo -s -n $files\n | sort -n -r
-
-    $editor (echo -s -n $files\n | sort -n -r | head -n 1 | string split -f 2 " ")
 end
+
+set_color green && echo "candidate(s):"
+set_color normal && echo -s -n $files\n | cat -n -
+
+if test (count $files) -eq 1
+    set n 1
+else
+    read -p "set_color green && echo -n -e \"\nchoice: \" && set_color normal" n
+end
+
+$editor $files[$n]
