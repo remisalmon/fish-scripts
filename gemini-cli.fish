@@ -11,7 +11,7 @@ if test -z $prompt
     exit 1
 end
 
-set prompt $prompt" - return one code block with the given files and instructions, without adding examples or explanations, without using tools or extensions"
+set prompt $prompt" - output a single code block and preserve the input format - do not add examples or explanations - do not try to read or write files"
 
 set response ($gemini -m $model -p $prompt 2>>(status dirname)/gemini-cli.log | string collect)
 

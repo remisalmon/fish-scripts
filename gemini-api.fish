@@ -5,6 +5,8 @@ set max_time (math "60 * 5")
 # set model "gemini-2.5-pro"
 set model "gemini-2.5-flash"
 
+set system_instruction "return a single code block without examples or explanations"
+
 set prompt (string join " " $argv | string escape -n)
 
 if test -z $prompt
@@ -16,10 +18,7 @@ set data (timeout 0.5 cat | string join "\n" | string escape -n)
 
 set contents '{"text": "'$prompt'"}'
 
-if test -z $data
-    set system_instruction "return a code block without examples or explanations"
-else
-    set system_instruction "return the given text as a code block edited without examples or explanations"
+if not test -z $data
     # set contents '{"inline_data": {"mime_type": "text/plain", "data": "'$data'"}}, '$contents
     set contents '{"text": "'$data'"}, '$contents
 end
