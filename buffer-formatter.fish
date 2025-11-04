@@ -37,7 +37,7 @@ switch (path extension $MICRO_FILE)
             echo $data | sqlfluff format -
         end
 
-    case ".tf" ".tfvars"
+    case ".tf" ".tfvars" ".tfbackend"
         echo $data | terraform fmt -
 
     case ".yaml" ".yml"
