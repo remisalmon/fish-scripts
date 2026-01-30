@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-if not set -q $argv[1]
+if not set -q argv[1]
     echo "usage: aws-sso.fish profile" && exit 1
 end
 

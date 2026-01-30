@@ -1,8 +1,7 @@
 #!/usr/bin/env fish
 
-if test (count $argv) -eq 0
-    echo "usage: snowflake-sso.fish env [DATABASE.SCHEMA]"
-    exit 1
+if not set -q argv[1]
+    echo "usage: snowflake-sso.fish env [DATABASE.SCHEMA]" && exit 1
 end
 
 set username $SNOWFLAKE_USER
@@ -16,8 +15,7 @@ switch $argv[1]
     case "pr*d*"
         set account_identifier $SNOWFLAKE_ACCOUNT_PRODUCTION
     case "*"
-        echo "bad env "$argv[1]
-        exit 1
+        echo "bad env "$argv[1] && exit 1
 end
 
 if test (count $argv) -eq 2

@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-if test (count $argv) -eq 0
+if not set -q argv[1]
     set file "script.sh"
 else
     set file $argv[1]

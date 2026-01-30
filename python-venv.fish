@@ -2,7 +2,7 @@
 
 set python_version "3.11"
 
-if test (count $argv) -eq 0
+if not set -q argv[1]
     set venv_name "venv"
 else
     set venv_name $argv[1]

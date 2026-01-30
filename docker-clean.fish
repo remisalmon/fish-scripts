@@ -1,17 +1,13 @@
 #!/usr/bin/env fish
 
-if test (count $argv) -eq 0
-    echo "usage: docker-clean.fish regex"
-
-    exit 1
+if not set -q argv[1]
+    echo "usage: docker-clean.fish regex" && exit 1
 end
 
 set IMAGES (docker image ls | string match -e -r "^[^ ]*"$argv[1])
 
 if test (count $IMAGES) -eq 0
-    echo "no images found"
-
-    exit 0
+    echo "no images found" && exit 0
 end
 
 docker image ls | head -n 1

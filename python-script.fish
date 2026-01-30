@@ -1,14 +1,13 @@
 #!/usr/bin/env fish
 
-if test (count $argv) -eq 0
+if not set -q argv[1]
     set file "script.py"
 else
     set file $argv[1]
 end
 
 if test -e $file
-    echo $file" already exists"
-    exit 1
+    echo $file" already exists" && exit 1
 end
 
 echo -n "\
