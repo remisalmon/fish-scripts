@@ -18,7 +18,7 @@ switch $argv[1]
         echo "bad env "$argv[1] && exit 1
 end
 
-if test (count $argv) -eq 2
+if set -q argv[2]
     set dbname (string replace "." "/" $argv[2])
 else
     set dbname ""

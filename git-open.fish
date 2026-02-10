@@ -13,19 +13,20 @@ if test (count $files) -eq 0
     set files (git grep -i -l $pattern $toplevel)
 end
 
-set files (echo -s -n $files\n | grep -v -i -E "(archives|artifacts)/")
+set files (string match -v -i -r "archives/|artifacts/" $files)
 
 if test (count $files) -eq 0
     exit 1
 end
 
-set_color green && echo "candidate(s):"
-set_color normal && echo -s -n $files\n | cat -n -
+echo (set_color green)"candidate(s):"(set_color normal)
+
+string join \n $files | cat -n -
 
 if test (count $files) -eq 1
     set n 1
 else
-    read -p "set_color green && echo -n -e \"\nchoice: \" && set_color normal" n
+    read -p 'echo -n (set_color green)\n"choice: "(set_color normal)' n
 end
 
 $editor $files[$n]
