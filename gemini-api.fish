@@ -35,7 +35,7 @@ set toc (date +%s)
 set response_time (math $toc" - "$tic)
 
 if test -z $response
-    exit 1
+    set response "null"
 end
 
 duckdb (status dirname)/gemini-api.db \
