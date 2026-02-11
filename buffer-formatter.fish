@@ -13,8 +13,7 @@ switch (path extension $MICRO_FILE)
         echo $data | jq
 
     case ".py"
-        # echo $data | black -
-        echo $data | isort - | black -
+        echo $data | black -
 
     case ".sql"
         if string match -q -e dbt (pwd)
