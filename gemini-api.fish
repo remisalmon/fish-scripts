@@ -3,7 +3,7 @@
 set model "gemini-2.5-flash"
 set system_instruction "return a single code block without examples or explanations"
 
-set prompt (string join " " $argv | string escape -n)
+set prompt (string join " " -- $argv | string escape -n)
 
 if test -z $prompt
     exit 1
