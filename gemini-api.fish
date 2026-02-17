@@ -17,9 +17,9 @@ if not test -z $data
     set content '{"inline_data": {"mime_type": "text/plain", "data": "'$data'"}}, '$content
 end
 
-set tic (date +%s)
-
 for try in (seq 3)
+    set tic (date +%s)
+
     set response (
         curl https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent \
         -s \
@@ -31,22 +31,22 @@ for try in (seq 3)
         | string collect
     )
 
-    if test (echo $response | jq -r '.error.code') != "503"
+    set toc (date +%s)
+
+    if test -z $response
+        set response null
+    end
+
+    duckdb (status dirname)/gemini-api.db \
+        -c 'create table if not exists logs (created_at timestamp default current_localtimestamp(), model varchar, prompt varchar, response json, response_time_seconds integer, retry_count integer);' \
+        -c 'insert into logs (model, prompt, response, response_time_seconds, retry_count) values($$'$model'$$, $$'$prompt'$$, $$'$response'$$, $$'(math $toc - $tic)'$$, $$'(math $try - 1)'$$);' &
+
+    if test (echo $response | jq -r '.error.code') != 503
         break
     else
         sleep {$try}s
     end
 end
-
-set toc (date +%s)
-
-if test -z $response
-    set response "null"
-end
-
-duckdb (status dirname)/gemini-api.db \
-    -c 'create table if not exists logs (created_at timestamp default current_localtimestamp(), model varchar, prompt varchar, response json, response_time_seconds integer, retry_count integer);' \
-    -c 'insert into logs (model, prompt, response, response_time_seconds, retry_count) values($$'$model'$$, $$'$prompt'$$, $$'$response'$$, $$'(math $toc - $tic)'$$, $$'(math $try - 1)'$$);' &
 
 set response (echo $response | jq -r '.candidates[0].content.parts[0].text' | string collect)
 
