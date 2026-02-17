@@ -3,11 +3,11 @@
 set data (cat -s - | string trim -r | string collect)
 
 switch (path extension $MICRO_FILE)
-    case ".go"
-        echo $data | gofmt
-
     case ".fish"
         echo $data | fish_indent
+
+    case ".go"
+        echo $data | gofmt
 
     case ".json" ".jsonl"
         echo $data | jq
@@ -16,25 +16,7 @@ switch (path extension $MICRO_FILE)
         echo $data | black -
 
     case ".sql"
-        if string match -q -e dbt (pwd)
-            cd (git rev-parse --show-toplevel)
-
-            source dbt_venv/bin/activate.fish
-
-            set TMP_FILE (path change-extension "" $MICRO_FILE)_tmp.sql
-
-            echo $data >$TMP_FILE
-
-            sqlfluff fix $TMP_FILE >/dev/null
-
-            set code $status
-
-            cat $TMP_FILE && rm -f $TMP_FILE
-
-            exit $code
-        else
-            echo $data | sqlfluff format -
-        end
+        echo $data | sqlfluff format -
 
     case ".tf" ".tfvars" ".tfbackend"
         echo $data | terraform fmt -
