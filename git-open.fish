@@ -13,7 +13,7 @@ if test (count $files) -eq 0
     set files (git grep -i -l $pattern $toplevel)
 end
 
-set files (string match -v -i -r "archives/|artifacts/" $files)
+set files (string match -v -i -r "archives?/|artifacts?/" $files)
 
 if test (count $files) -eq 0
     exit 1

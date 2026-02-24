@@ -7,7 +7,7 @@ else
 end
 
 for file in (git ls-files $pattern)
-    if not string match -q -i -r "text/.+" (file -i $file | string split -f 2 ":")
+    if not string match -q -i -r "^"$file": text/.+" (file -i $file)
         continue
     else if string match -q -i -r "archives?/|artifacts?/" $file
         continue

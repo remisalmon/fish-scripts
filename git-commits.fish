@@ -29,7 +29,7 @@ for git_repo in ~/Work/GitHub/HotelEngine/*/
     end
 
     if $main
-        set git_branch (git branch | string match -q -r "^[ *]+master" && echo "master" || echo "main")
+        set git_branch (git branch | string match -q -r "^[* ]+master\$" && echo "master" || echo "main")
 
         git fetch origin $git_branch
 
