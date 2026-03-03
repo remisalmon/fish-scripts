@@ -1,15 +1,16 @@
 #!/usr/bin/env fish
 
-set model "gemini-2.5-flash"
-set system_instruction "return a single code block without examples or explanations"
+set model gemini-3-flash-preview
 
-set prompt (string join " " -- $argv | string escape -n)
+set system_instruction "you are a code assistant running in a unix shell, answer without examples or explanations"
+
+set prompt (string join " " -- $argv | string replace -a "\"" "\\\"")
 
 if test -z $prompt
     exit 1
 end
 
-set data (timeout 0.5s cat | base64 -w 0)
+set data (timeout 0.5 cat | base64 -w 0)
 
 set content '{"text": "'$prompt'"}'
 
@@ -44,14 +45,8 @@ for try in (seq 3)
     if test (echo $response | jq -r '.error.code') != 503
         break
     else
-        sleep {$try}s
+        sleep $try
     end
 end
 
-set response (echo $response | jq -r '.candidates[0].content.parts[0].text' | string collect)
-
-if string match -q "```*```" $response
-    echo $response | head -n -1 | tail -n +2
-else
-    echo $response
-end
+echo $response | jq -r '.candidates[0].content.parts[0].text' | string match -v -r "^```"
