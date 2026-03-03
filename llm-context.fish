@@ -2,13 +2,6 @@
 
 # inspired by https://github.com/simonw/files-to-prompt
 
-if test $argv[1] = --debug
-    set debug true
-    set argv $argv[2..-1]
-else
-    set debug false
-end
-
 if git rev-parse
     if test (count $argv) -gt 0
         set pattern "*"$argv"*"
@@ -20,9 +13,9 @@ if git rev-parse
 
     set files (git ls-files $pattern)
 else
-    set pattern (string join "|" (string escape --style=regex $argv))
+    set pattern (string escape --style=regex $argv | string join "|")
 
-    set files (string match -e -r $pattern (ls -1 -a))
+    set files (ls -1 -a -p | string match -v -r "/\$" | string match -e -r $pattern)
 end
 
 for file in $files
@@ -32,11 +25,7 @@ for file in $files
         continue
     end
 
-    if $debug
-        echo "content of: "$file
-    else
-        echo -e "---\ncontent of "$file":\n---"
+    echo -e "---\ncontent of "$file":\n---"
 
-        cat -s $file
-    end
+    cat -s $file
 end
