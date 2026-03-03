@@ -3,17 +3,17 @@
 # Option 1
 # set pipe ""
 # while read line
-#     set pipe {$pipe}{$line}"\n"
+#     set pipe {$pipe}{$line}\n
 # end
 
 # Option 2
-# set pipe (read -z | string join "\n")
+# set pipe (read -z | string join \n | string collect)
 
 # Option 3
-# set pipe (cat | string join "\n")
+# set pipe (cat | string join \n | string collect)
 
 # Option 4 (also works with no pipe)
-set pipe (timeout 0.5s cat | string join \n | string collect || echo "")
+set pipe (timeout 0.5 cat | string join \n | string collect || echo "")
 
-echo "argv="(string join " " $argv | string collect || echo "")
+echo "argv="(string join -- " " $argv | string collect || echo "")
 echo "pipe="$pipe
