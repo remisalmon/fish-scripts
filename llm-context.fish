@@ -9,8 +9,6 @@ if git rev-parse
         set pattern "*"
     end
 
-    echo $pattern
-
     set files (git ls-files $pattern)
 else
     set pattern (string escape --style=regex $argv | string join "|")
