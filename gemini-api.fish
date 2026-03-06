@@ -35,12 +35,12 @@ for try in (seq 3)
     set toc (date +%s)
 
     if test -z $response
-        set response null
+        set response "{}"
     end
 
     duckdb (status dirname)/gemini-api.db \
         -c 'create table if not exists logs (created_at timestamp default current_localtimestamp(), model varchar, prompt varchar, response json, response_time_seconds integer, retry_count integer);' \
-        -c 'insert into logs (model, prompt, response, response_time_seconds, retry_count) values($$'$model'$$, $$'$prompt'$$, $$'$response'$$, $$'(math $toc - $tic)'$$, $$'(math $try - 1)'$$);' &
+        -c 'insert into logs (model, prompt, response, response_time_seconds, retry_count) values($$'$model'$$, $$'$prompt'$$, nullif($$'$response'$$, $${}$$), $$'(math $toc - $tic)'$$, $$'(math $try - 1)'$$);' &
 
     if test (echo $response | jq -r '.error.code') != 503
         break
