@@ -2,7 +2,7 @@
 
 set model gemini-3-flash-preview
 
-set system_instruction "you are a code assistant running in a unix shell, answer without examples or explanations"
+set system_instruction "you are a coding assistant running in a unix shell, return a single code block" # from https://ai.google.dev/gemini-api/docs/prompting-strategies
 
 set prompt (string join " " -- $argv | string replace -a "\\" "\\\\" | string replace -a "\"" "\\\"")
 
