@@ -11,11 +11,11 @@ if git rev-parse
     set files (git ls-files $pattern)
 else
     set pattern (string escape --style=regex -- $argv | string join "|")
-    set files (ls -1 -a -p | string match -v -r "/\$" | string match -e -r $pattern)
+    set files (ls -1 -a | string match -e -r $pattern)
 end
 
 for file in $files
-    if not test -e $file
+    if not test -f $file
         continue
     else if test (wc -c $file | string match -r "^\d+") -gt 1e6 # 1 MB
         continue
