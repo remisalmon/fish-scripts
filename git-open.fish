@@ -3,7 +3,7 @@
 git rev-parse || exit 1
 
 if test (count $argv) -eq 0
-    echo "usage: git-open.fish PATTERN" && exit 1
+    echo "usage: git-open.fish PATTERN ..." && exit 1
 end
 
 set pattern (string escape --style=regex -- $argv | string join ".*")

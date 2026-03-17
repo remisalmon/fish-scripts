@@ -1,12 +1,12 @@
 #!/usr/bin/env fish
 
 if not set -q argv[1]
-    echo "usage: docker-clean.fish regex" && exit 1
+    echo "usage: docker-clean.fish REGEX" && exit 1
 end
 
 command -q podman && set command podman || set command docker
 
-set images ($command image ls | string match -e -r '^[^ ]*'$argv[1])
+set images ($command image ls | string match -e -r "^[^ ]*"$argv[1])
 
 if test (count $images) -eq 0
     echo "no images found" && exit 0

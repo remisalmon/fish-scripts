@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 if not set -q argv[1]
-    echo "usage: snowflake-sso.fish env [DATABASE.SCHEMA]" && exit 1
+    echo "usage: snowflake-sso.fish ENV [DATABASE.SCHEMA]" && exit 1
 end
 
 set username $SNOWFLAKE_USER
