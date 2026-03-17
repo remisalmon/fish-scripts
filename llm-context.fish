@@ -2,22 +2,22 @@
 
 # inspired by https://github.com/simonw/files-to-prompt
 
-if git rev-parse
-    if test (count $argv) -gt 0
-        set pattern "*"$argv"*"
-    else
-        set pattern "*"
-    end
+if test (count $argv) -eq 0
+    echo "usage: llm-context.fish PATTERN ..." && exit 1
+end
 
+if git rev-parse
+    set pattern "*"$argv"*"
     set files (git ls-files $pattern)
 else
-    set pattern (string escape --style=regex $argv | string join "|")
-
+    set pattern (string escape --style=regex -- $argv | string join "|")
     set files (ls -1 -a -p | string match -v -r "/\$" | string match -e -r $pattern)
 end
 
 for file in $files
-    if test (wc -c $file | string match -r "^\d+") -gt 1e6 # 1 MB
+    if not test -e $file
+        continue
+    else if test (wc -c $file | string match -r "^\d+") -gt 1e6 # 1 MB
         continue
     else if string match -q -i -r "archives?/|artifacts?/" $file
         continue
@@ -25,5 +25,5 @@ for file in $files
 
     echo -e "---\ncontent of "$file":\n---"
 
-    cat -s $file
+    cat $file
 end
