@@ -4,7 +4,7 @@ set model gemini-3-flash-preview
 
 set system_instruction "you are a code assistant running in a unix shell, answer without examples or explanations"
 
-set prompt (string join " " -- $argv | string replace -a "\"" "\\\"")
+set prompt (string join " " -- $argv | string replace -a "\\" "\\\\" | string replace -a "\"" "\\\"")
 
 if test -z $prompt
     exit 1
@@ -40,7 +40,7 @@ for try in (seq 3)
 
     duckdb (status dirname)/gemini-api.db \
         -c 'create table if not exists logs (created_at timestamp default current_localtimestamp(), model varchar, prompt varchar, response json, response_time_seconds integer, retry_count integer);' \
-        -c 'insert into logs (model, prompt, response, response_time_seconds, retry_count) values($$'$model'$$, $$'$prompt'$$, nullif($$'$response'$$, $${}$$), $$'(math $toc - $tic)'$$, $$'(math $try - 1)'$$);' &
+        -c 'insert into logs (model, prompt, response, response_time_seconds, retry_count) values($$'$model'$$, $$'$prompt'$$, nullif($$'(string replace -a "\$" "\\\\\$" $response | string collect)'$$, $${}$$), $$'(math $toc - $tic)'$$, $$'(math $try - 1)'$$);' &
 
     if test (echo $response | jq -r '.error.code') != 503
         break
