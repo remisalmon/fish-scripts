@@ -1,10 +1,12 @@
 #!/usr/bin/env fish
 
-if not git rev-parse
-    exit 1
+git rev-parse || exit 1
+
+if test (count $argv) -eq 0
+    echo "usage: git-open.fish PATTERN" && exit 1
 end
 
-set pattern (string join ".*" $argv)
+set pattern (string escape --style=regex -- $argv | string join ".*")
 set editor (git config get core.editor)
 set toplevel (git rev-parse --show-toplevel)
 set files (git ls-files $toplevel | string match -i -e -r $pattern)
