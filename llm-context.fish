@@ -23,7 +23,7 @@ for file in $files
         continue
     end
 
-    echo -e "---\ncontent of "$file":\n---"
+    echo -e "---\n"$file"\n---"
 
-    cat $file
+    cat -n $file | string trim
 end
