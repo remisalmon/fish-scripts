@@ -1,9 +1,7 @@
 #!/usr/bin/env fish
 
 if test (count $argv) -ne 2
-    echo "usage: ssh-forward.fish HOST PORT"
-
-    exit 1
+    echo "usage: ssh-forward.fish HOST PORT" && exit 1
 end
 
 set -g host $argv[1]

@@ -10,10 +10,10 @@
 # set pipe (read -z | string join \n | string collect)
 
 # Option 3
-# set pipe (cat | string join \n | string collect)
+# set pipe (cat | string collect)
 
 # Option 4 (also works with no pipe)
-set pipe (timeout 0.5 cat | string join \n | string collect || echo "")
+set pipe (timeout 0.5 cat | string collect || echo "")
 
 echo "argv="(string join -- " " $argv | string collect || echo "")
 echo "pipe="$pipe

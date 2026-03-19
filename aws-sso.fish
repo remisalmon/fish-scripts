@@ -4,7 +4,7 @@ if not set -q argv[1]
     echo "usage: aws-sso.fish PROFILE" && exit 1
 end
 
-set -g profile $argv[1]
+set profile $argv[1]
 
 function set_credentials
     set -g credentials (aws configure export-credentials --profile $profile)

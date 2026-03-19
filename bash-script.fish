@@ -7,8 +7,7 @@ else
 end
 
 if test -e $file
-    echo $file" already exists"
-    exit 1
+    echo $file" already exists" && exit 1
 end
 
 echo -e "#!/usr/bin/env bash\n" > $file
