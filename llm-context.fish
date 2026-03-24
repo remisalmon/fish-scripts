@@ -25,5 +25,5 @@ for file in $files
 
     echo -e "---\n"$file"\n---"
 
-    cat -n $file | string trim
+    cat -n $file | string trim -l
 end
