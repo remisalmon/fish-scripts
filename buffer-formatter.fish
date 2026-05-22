@@ -10,7 +10,7 @@ switch (path extension $MICRO_FILE)
         echo $data | gofmt
 
     case ".json" ".jsonl"
-        echo $data | jq
+        echo $data | jq -S
 
     case ".py"
         echo $data | black -
