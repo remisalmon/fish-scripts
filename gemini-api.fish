@@ -1,7 +1,6 @@
 #!/usr/bin/env fish
 
-set model gemini-3-flash-preview
-
+set model "gemini-3.5-flash"
 set system_instruction "you are a coding assistant running in a unix shell, return a single code block" # from https://ai.google.dev/gemini-api/docs/prompting-strategies
 
 set prompt (string join " " -- $argv | string replace -a "\\" "\\\\" | string replace -a "\"" "\\\"")
@@ -20,7 +19,6 @@ end
 
 for try in (seq 3)
     set tic (date +%s)
-
     set response (
         curl https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent \
         -s \
@@ -31,7 +29,6 @@ for try in (seq 3)
         -d '{"system_instruction": {"parts": [{"text": "'$system_instruction'"}]}, "contents": [{"parts": ['$content']}]}' \
         | string collect
     )
-
     set toc (date +%s)
 
     if test -z $response
