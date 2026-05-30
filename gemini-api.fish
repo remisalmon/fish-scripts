@@ -2,6 +2,7 @@
 
 set model "gemini-3.5-flash"
 set system_instruction "you are a coding assistant running in a unix shell, return a single code block" # from https://ai.google.dev/gemini-api/docs/prompting-strategies
+set response_mime_type text/plain
 
 set prompt (string join " " -- $argv | string replace -a "\\" "\\\\" | string replace -a "\"" "\\\"")
 
@@ -9,12 +10,16 @@ if test -z $prompt
     exit 1
 end
 
+if not test -z $GEMINI_RESPONSE_MIME_TYPE
+    set response_mime_type $GEMINI_RESPONSE_MIME_TYPE
+end
+
 set data (timeout 0.5 cat | base64 -w 0)
 
 set content '{"text": "'$prompt'"}'
 
 if not test -z $data
-    set content '{"inline_data": {"mime_type": "text/plain", "data": "'$data'"}}, '$content
+    set content '{"inlineData": {"mimeType": "text/plain", "data": "'$data'"}}, '$content
 end
 
 for try in (seq 3)
@@ -26,7 +31,7 @@ for try in (seq 3)
         -H 'x-goog-api-key: '$GEMINI_API_KEY \
         -H 'Content-Type: application/json' \
         -X POST \
-        -d '{"system_instruction": {"parts": [{"text": "'$system_instruction'"}]}, "contents": [{"parts": ['$content']}]}' \
+        -d '{"systemInstruction": {"parts": [{"text": "'$system_instruction'"}]}, "generationConfig": {"responseMimeType": "'$response_mime_type'"}, "contents": [{"parts": ['$content']}]}' \
         | string collect
     )
     set toc (date +%s)
