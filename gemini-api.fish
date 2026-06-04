@@ -1,17 +1,15 @@
 #!/usr/bin/env fish
 
+argparse json -- $argv || exit 1
+
 set model "gemini-3.5-flash"
 set system_instruction "you are a coding assistant running in a unix shell, return a single code block" # from https://ai.google.dev/gemini-api/docs/prompting-strategies
-set response_mime_type text/plain
 
+set response_mime_type (set -q _flag_json && echo "application/json" || echo "text/plain")
 set prompt (string join " " -- $argv | string replace -a "\\" "\\\\" | string replace -a "\"" "\\\"")
 
 if test -z $prompt
     exit 1
-end
-
-if not test -z $GEMINI_RESPONSE_MIME_TYPE
-    set response_mime_type $GEMINI_RESPONSE_MIME_TYPE
 end
 
 set data (timeout 0.5 cat | base64 -w 0)

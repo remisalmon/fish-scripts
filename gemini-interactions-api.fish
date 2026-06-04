@@ -1,15 +1,20 @@
 #!/usr/bin/env fish
 
 if test (count $argv) -eq 0
-    echo "usage: gemini-interactions-api.fish PROMPT ..." && exit 1
+    echo "usage: gemini-interactions-api.fish [--json] PROMPT ..." && exit 1
 end
+
+argparse json -- $argv || exit 1
 
 set model "gemini-3.5-flash"
 set system_instruction "you are a coding assistant running in a unix shell, return a single code block" # from https://ai.google.dev/gemini-api/docs/prompting-strategies
 
+set response_format_mime_type (set -q _flag_json && echo "application/json" || echo "text/plain")
 set prompt (string join " " -- $argv | string replace -a "\\" "\\\\" | string replace -a "\"" "\\\"")
 set pipe (timeout 0.5 cat | base64 -w 0)
 set previous_interaction_id (cat .gemini_interaction_id)
+
+set response_format '{"type": "text", "mime_type": "'$response_format_mime_type'"}'
 
 if not test -z $pipe
     set input '[{"type": "text", "text": "'$pipe'"}, {"type": "text", "text": "'$prompt'"}]'
@@ -18,9 +23,9 @@ else
 end
 
 if not test -z $previous_interaction_id
-    set data '{"model": "'$model'", "system_instruction": "'$system_instruction'", "input": '$input', "previous_interaction_id": "'$previous_interaction_id'"}'
+    set data '{"model": "'$model'", "system_instruction": "'$system_instruction'", "response_format": '$response_format', "input": '$input', "previous_interaction_id": "'$previous_interaction_id'"}'
 else
-    set data '{"model": "'$model'", "system_instruction": "'$system_instruction'", "input": '$input'}'
+    set data '{"model": "'$model'", "system_instruction": "'$system_instruction'", "response_format": '$response_format', "input": '$input'}'
 end
 
 for try in (seq 3)
