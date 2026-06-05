@@ -59,4 +59,4 @@ for try in (seq 3)
     end
 end
 
-echo $response | jq -r '.steps[-1].content[0].text' | string match -v -r "^```"
+echo $response | jq -r '.steps[-1].content[0].text' | string trim -r | string match -v -r "^```"
