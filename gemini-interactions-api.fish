@@ -43,14 +43,14 @@ for try in (seq 3)
     set toc (date +%s)
 
     if test -z $response
-        set response "{}"
+        set response null
     else
         echo $response | jq -r '.id' >.gemini_interaction_id
     end
 
     duckdb (status dirname)/gemini-interactions-api.db \
         -c 'create table if not exists logs (created_at timestamp default current_localtimestamp(), model varchar, prompt varchar, response json, response_time_seconds integer, retry_count integer);' \
-        -c 'insert into logs (model, prompt, response, response_time_seconds, retry_count) values($$'$model'$$, $$'$prompt'$$, nullif($$'(string replace -a "\$" "\\\\\$" $response | string collect)'$$, $${}$$), $$'(math $toc - $tic)'$$, $$'(math $try - 1)'$$);' &
+        -c 'insert into logs (model, prompt, response, response_time_seconds, retry_count) values($_$'$model'$_$, $_$'$prompt'$_$, $_$'$response'$_$, $_$'(math $toc - $tic)'$_$, $_$'(math $try - 1)'$_$);' &
 
     if test (echo $response | jq -r '.error.code') != 503
         break
@@ -59,4 +59,10 @@ for try in (seq 3)
     end
 end
 
-echo $response | jq -r '.steps[-1].content[0].text' | string trim -r | string match -v -r "^```"
+set text (echo $response | jq -r '.steps[-1].content[0].text' | string match -v -r "^```" | string trim -r | string collect)
+
+if test $text = null
+    exit 1
+else
+    echo $text
+end
