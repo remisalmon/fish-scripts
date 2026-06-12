@@ -6,7 +6,7 @@ if test (count $argv) -eq 0
     echo "usage: gemini-agent.fish PROMPT ..." && exit 1
 end
 
-set prompt (string join " " $argv)" - return a json object having the path of each new or modified file as key and the full content of each new or modified file as value"
+set prompt (string join " " $argv)" - return a json object having the path of each file as key and the full content of each file (if added or modified) or null (if deleted) as value"
 
 set response (timeout 0.5 cat | gemini-api.fish --json $prompt)
 
