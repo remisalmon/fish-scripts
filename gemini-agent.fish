@@ -1,12 +1,18 @@
 #!/usr/bin/env fish
 
+set use_diff true
+
 git rev-parse || exit 1
 
 if test (count $argv) -eq 0
     echo "usage: gemini-agent.fish PROMPT ..." && exit 1
 end
 
-set prompt (string join " " $argv)" - return a json object having the path of each file as key and the full content of each file (if added or modified) or null (if deleted) as value"
+if $use_diff
+    set prompt (string join " " $argv)" - return a json object having the path of each file as key and a unified diff with no prefix of each file (if added or modified) or a null (if deleted) as value"
+else
+    set prompt (string join " " $argv)" - return a json object having the path of each file as key and the full content of each file (if added or modified) or null (if deleted) as value"
+end
 
 set response (timeout 0.5 cat | gemini-api.fish --json $prompt)
 
@@ -24,12 +30,18 @@ for k in (echo $response | jq -r '.|keys[]')
     end
 
     if test $v = null
-        echo "gemini-agent.fish is removing "(set_color red)$k(set_color normal)
+        echo "gemini-agent.fish is removing "(set_color green)$k(set_color normal)
 
-        rm -f $k
+        git rm --force --quiet $k
     else
-        echo "gemini-agent.fish is writing to "(set_color red)$k(set_color normal)
+        echo "gemini-agent.fish is editing "(set_color red)$k(set_color normal)
 
-        echo $v >$k
+        if $use_diff
+            echo $v | git apply -p0 --ignore-whitespace --recount # v.git.patch
+        else
+            echo $v >$k
+        end
     end
 end
+
+echo $response >gemini-agent.json # debug
