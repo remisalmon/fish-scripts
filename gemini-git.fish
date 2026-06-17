@@ -5,7 +5,7 @@ set use_diff true
 git rev-parse || exit 1
 
 if test (count $argv) -eq 0
-    echo "usage: gemini-agent.fish PROMPT ..." && exit 1
+    echo "usage: gemini-git.fish PROMPT ..." && exit 1
 end
 
 if $use_diff
@@ -20,28 +20,26 @@ for k in (echo $response | jq -r '.|keys[]')
     set v (echo $response | jq -r '."'$k'"' | string trim -r | string collect)
 
     if contains $k (git diff --name-only)
-        echo "gemini-agent.fish is staging "(set_color green)$k(set_color normal)
+        echo "gemini-git.fish is staging "(set_color green)$k(set_color normal)
 
         git add $k
     else if not test -e (path dirname $k)
-        echo "gemini-agent.fish is making "(set_color red)(path dirname $k)"/"(set_color normal)
+        echo "gemini-git.fish is making "(set_color red)(path dirname $k)"/"(set_color normal)
 
         mkdir -p (path dirname $k)
     end
 
     if test $v = null
-        echo "gemini-agent.fish is removing "(set_color green)$k(set_color normal)
+        echo "gemini-git.fish is removing "(set_color green)$k(set_color normal)
 
         git rm --force --quiet $k
     else
-        echo "gemini-agent.fish is editing "(set_color red)$k(set_color normal)
+        echo "gemini-git.fish is editing "(set_color red)$k(set_color normal)
 
         if $use_diff
-            echo $v | git apply -p0 --ignore-whitespace --recount # v.git.patch
+            echo $v | git apply -p0 --ignore-whitespace --recount
         else
             echo $v >$k
         end
     end
 end
-
-echo $response >gemini-agent.json # debug
