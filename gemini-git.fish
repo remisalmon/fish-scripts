@@ -19,7 +19,7 @@ set response (timeout 0.5 cat | gemini-api.fish --json $prompt)
 for k in (echo $response | jq -r '.|keys[]')
     set v (echo $response | jq -r '."'$k'"' | string trim -r | string collect)
 
-    if contains $k (git diff --name-only)
+    if contains $k (git diff --name-only --relative)
         echo "gemini-git.fish is staging "(set_color green)$k(set_color normal)
 
         git add $k
