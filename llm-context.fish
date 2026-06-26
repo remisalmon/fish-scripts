@@ -25,11 +25,14 @@ for file in $files
         continue
     end
 
-    echo -e "---\n"$file"\n---"
+    echo $file
+    echo ---
 
     if set -q _flag_n
         cat -n $file | string trim -l
     else
         cat $file
     end
+
+    echo ---
 end
