@@ -19,22 +19,28 @@ set response (timeout 0.5 cat | gemini-api.fish --json $prompt)
 for k in (echo $response | jq -r '.|keys[]')
     set v (echo $response | jq -r '."'$k'"' | string trim -r | string collect)
 
-    if contains $k (git diff --name-only --relative)
-        echo "gemini-git.fish is staging "(set_color green)$k(set_color normal)
-
-        git add $k
-    else if not test -e (path dirname $k)
-        echo "gemini-git.fish is making "(set_color red)(path dirname $k)"/"(set_color normal)
-
-        mkdir -p (path dirname $k)
-    end
-
     if test $v = null
         echo "gemini-git.fish is removing "(set_color green)$k(set_color normal)
 
         git rm --force --quiet $k
     else
-        echo "gemini-git.fish is editing "(set_color red)$k(set_color normal)
+        if contains $k (git ls-files $k)
+            if contains $k (git diff --name-only --relative)
+                echo "gemini-git.fish is staging "(set_color green)$k(set_color normal)
+
+                git add $k
+            end
+
+            echo "gemini-git.fish is modifying "(set_color red)$k(set_color normal)
+        else
+            if not test -e (path dirname $k)
+                echo "gemini-git.fish is making "(set_color red)(path dirname $k)"/"(set_color normal)
+
+                mkdir -p (path dirname $k)
+            end
+
+            echo "gemini-git.fish is adding "(set_color red)$k(set_color normal)
+        end
 
         if $use_diff
             echo $v | git apply -p0 --ignore-whitespace --recount
