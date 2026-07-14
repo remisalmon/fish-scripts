@@ -29,6 +29,8 @@ set response (
 
 if test -z $response
     set response null
+else
+    set response (echo $response | jq -s '.[-1]' | string collect)
 end
 
 duckdb (status dirname)/gemini-api.db \

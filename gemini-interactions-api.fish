@@ -41,6 +41,8 @@ set response (
 if test -z $response
     set response null
 else
+    set response (echo $response | jq -s '.[-1]' | string collect)
+
     echo $response | jq -r '.id' >.gemini_interaction_id
 end
 
