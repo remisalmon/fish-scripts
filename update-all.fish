@@ -13,14 +13,12 @@ if test (uname -s) = Linux
     flatpak uninstall --unused
 
     # conda update --all
-    # conda clean --all
+    # conda clean --all --yes
 
     pipx upgrade-all --include-injected
     "
 else if test (uname -s) = Darwin
     set commands "
-    # test
-
     sudo port selfupdate
     sudo port upgrade outdated
     sudo port reclaim
@@ -53,7 +51,7 @@ else if test (uname -s) = Darwin
     "
 end
 
-for i in (echo $commands | string join -n \n | string match -v -r "^ *#")
+for i in (echo $commands | string trim -l |  string join -n \n | string match -v -r "^ *#")
     echo (set_color blue)"[eval] "$i(set_color normal)
     eval $i
 end
