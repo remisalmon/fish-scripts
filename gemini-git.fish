@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-set use_diff true
+set use_diff false
 
 git rev-parse || exit 1
 
@@ -9,9 +9,9 @@ if test (count $argv) -eq 0
 end
 
 if $use_diff
-    set prompt (string join " " $argv)" - return a json object having the path of each file as key and a unified diff with no prefix of each file (if added or modified) or a null (if deleted) as value"
+    set prompt (string join " " $argv)" - return a single valid json object where each key is a file path and each value its unified diff with no prefix (for added or modified files) or null (for deleted files)"
 else
-    set prompt (string join " " $argv)" - return a json object having the path of each file as key and the full content of each file (if added or modified) or null (if deleted) as value"
+    set prompt (string join " " $argv)" - return a single valid json object where each key is a file path and each value its full content (for added or modified files) or null (for deleted files)"
 end
 
 set response (timeout 0.5 cat | gemini-api.fish --json $prompt)
