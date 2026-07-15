@@ -1,9 +1,5 @@
 #!/usr/bin/env fish
 
-source ~/.env
-
-echo -n $OKTA_PASSWORD | pbcopy
-
 if test (uname -s) = Linux
     set commands "
     sudo dnf upgrade
@@ -49,9 +45,11 @@ else if test (uname -s) = Darwin
     rm -r -f -v ~/airflow/
     rm -r -f -v ~/__pycache__/
     "
+
+    echo -n $OKTA_PASSWORD | pbcopy
 end
 
-for i in (echo $commands | string trim -l |  string join -n \n | string match -v -r "^ *#")
+for i in (echo $commands | string trim -l |  string join -n \n | string match -v -r "^#")
     echo (set_color blue)"[eval] "$i(set_color normal)
     eval $i
 end
