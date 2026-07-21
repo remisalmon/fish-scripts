@@ -39,6 +39,4 @@ duckdb (status dirname)/gemini-api.db \
 
 set text (echo $response | jq -r '.candidates[0].content.parts[0].text' | string match -v -r "^```" | string collect)
 
-test $text = null && exit 1
-
-echo $text
+test $text != null && echo $text
