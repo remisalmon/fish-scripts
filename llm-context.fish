@@ -29,10 +29,11 @@ for file in $files
     echo ---
 
     if set -q _flag_n
-        cat -n $file | string trim -l
+        set file_content (cat -n $file | string trim -l | string collect)
     else
-        cat $file
+        set file_content (cat $file | string collect)
     end
 
+    echo $file_content
     echo ---
 end
