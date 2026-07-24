@@ -6,7 +6,7 @@ if test (count $argv) -eq 0
     echo "usage: "(status basename)" [--json] PROMPT ..." && exit 1
 end
 
-set model "gemini-3.5-flash"
+set model "gemini-3.6-flash"
 set system_instruction "you are a text editor assistant running in a unix shell, return a single code block" # from https://ai.google.dev/gemini-api/docs/prompting-strategies
 
 set response_format_mime_type (set -q _flag_json && echo "application/json" || echo "text/plain")
