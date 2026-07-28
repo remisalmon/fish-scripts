@@ -1,9 +1,9 @@
 #!/usr/bin/env fish
 
 set namespace (kubectl get namespaces -o name | string match -e "kafka" | string split "/" -f 2)
-set service (kubectl get services -o name -n $namespace | string match -e "kafka-connect" | string split "/" -f 2)
+set service (kubectl get services -o name -n $namespace | string match -e "kafka-connect")
 
-kubectl port-forward -n $namespace service/{$service} 8083 &
+kubectl port-forward -n $namespace $service 8083 &
 
 set kubectl_pid $last_pid
 
