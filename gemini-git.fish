@@ -9,9 +9,9 @@ if test (count $argv) -eq 0
 end
 
 if $use_diff
-    set prompt (string join " " $argv)" - return a single valid json object where each key is a file path and each value its unified diff with no prefix (for added or modified files) or null (for deleted files)"
+    set prompt (string join " " $argv)" - return a json object where each key is a file path and each value is its unified diff with no prefix (for added or modified files) or null (for deleted files)"
 else
-    set prompt (string join " " $argv)" - return a single valid json object where each key is a file path and each value its full content (for added or modified files) or null (for deleted files)"
+    set prompt (string join " " $argv)" - return a json object where each key is a file path and each value is its full content (for added or modified files) or null (for deleted files)"
 end
 
 set response (timeout 0.5 cat | gemini-api.fish --json $prompt)
