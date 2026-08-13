@@ -18,8 +18,8 @@ string join \n $images
 
 read -p 'echo \n"REMOVE [y/N]? "' a
 
-if string match -q -i y $a
-    for image in (string join \n $images | string replace -a -r " +" " " | string split -f 3 " " | uniq)
-        $command image rm -f $image
-    end
+string match -q -i $a y || exit 0
+
+for image in (string join \n $images | string replace -a -r " +" " " | string split -f 3 " " | uniq)
+    $command image rm -f $image
 end
