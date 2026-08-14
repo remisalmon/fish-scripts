@@ -5,16 +5,10 @@
 argparse n -- $argv || exit 1
 
 if test (count $argv) -eq 0
-    echo "usage: llm-context.fish [-n] PATTERN ..." && exit 1
+    echo "usage: llm-context.fish [-n] PATH ..." && exit 1
 end
 
-if git rev-parse
-    set pattern "*"$argv"*"
-    set files (git ls-files $pattern)
-else
-    set pattern (string escape --style=regex -- $argv | string join "|")
-    set files (ls -1 -a | string match -e -r $pattern)
-end
+set files (git rev-parse && git ls-files $argv || find $argv)
 
 for file in $files
     if not test -f $file
