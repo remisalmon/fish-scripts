@@ -6,16 +6,16 @@ if test (count $argv) -eq 0
     echo "usage: git-open.fish PATTERN ..." && exit 1
 end
 
-set pattern (string escape --style=regex -- $argv | string join ".*")
 set editor (git config get core.editor)
 set toplevel (git rev-parse --show-toplevel)
+set pattern (string join ".*" $argv)
 set files (git ls-files $toplevel | string match -i -e -r $pattern)
 
 if test (count $files) -eq 0
     set files (git grep -i -l $pattern $toplevel)
 end
 
-set files (string match -v -i -r "archives?/|artifacts?/" $files)
+set files (string match -i -v -r "archives?/|artifacts?/" $files)
 
 if test (count $files) -eq 0
     exit 1
