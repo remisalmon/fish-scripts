@@ -1,5 +1,6 @@
 #!/usr/bin/env fish
 
+set file (pwd)/git-commits.txt
 set author (git config get user.email)
 set pretty "%cs %s %b"
 set commits
@@ -8,9 +9,9 @@ read -P "since [last Sunday]? " since
 
 test -z $since && set since "last Sunday"
 
-read -P "until [today]? " until
+read -P "until [now]? " until
 
-test -z $until && set until today
+test -z $until && set until now
 
 read -P "main/master branch only [Y/n]? " main
 
@@ -54,5 +55,5 @@ if test -z (string join "" $commits)
 else
     echo -e "---\ngit commits:"
 
-    string join \n $commits
+    string join \n $commits | tee $file
 end
