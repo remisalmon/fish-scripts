@@ -9,7 +9,7 @@ end
 set editor (git config get core.editor)
 set toplevel (git rev-parse --show-toplevel)
 set pattern (string join ".*" $argv)
-set files (git ls-files $toplevel | grep -i -r $pattern -) # matches git grep use of basic regexp vs fish string match uses of perl regexp
+set files (git ls-files $toplevel | grep -i -r $pattern -) # matches git grep use of basic regexp (vs fish string match use of perl regexp)
 
 if test (count $files) -eq 0
     set files (git grep -i -l $pattern $toplevel)
