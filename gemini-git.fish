@@ -14,7 +14,7 @@ else
     set prompt (string join " " $argv)" - return a json object where each key is a file path and each value is its full content (for added or modified files) or null (for deleted files)"
 end
 
-set response (timeout 0.5 cat | gemini-api.fish --json $prompt)
+set response (timeout 0.5 cat | gemini-interactions-api.fish --json $prompt)
 
 for k in (echo $response | jq -r '.|keys[]')
     set v (echo $response | jq -r '."'$k'"' | string trim -r | string collect)
@@ -34,7 +34,11 @@ for k in (echo $response | jq -r '.|keys[]')
 
         echo "gemini-git.fish is modifying "(set_color red)$k(set_color normal)
     else
-        if not test -e (path dirname $k)
+        if test $v = null
+            echo "gemini-git.fish is ignoring "(set_color red)$k(set_color normal)
+
+            continue
+        else if not test -e (path dirname $k)
             echo "gemini-git.fish is making "(set_color red)(path dirname $k)"/"(set_color normal)
 
             mkdir -p (path dirname $k)
