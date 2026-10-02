@@ -6,7 +6,7 @@ if test (count $argv) -eq 0
     echo "usage: "(status basename)" [--json] PROMPT ..." && exit 1
 end
 
-set model "gemini-3.6-flash"
+set model "gemini-3.8-flash"
 set system_instruction "you are a text editor assistant running in a unix shell, return a single code block" # from https://ai.google.dev/gemini-api/docs/prompting-strategies
 
 set prompt (string join " " -- $argv | string replace -a "\\" "\\\\" | string replace -a "\"" "\\\"")
@@ -14,13 +14,13 @@ set pipe (timeout 0.5 cat | base64 -w 0)
 set previous_interaction_id (test -e .gemini_interaction_id && cat .gemini_interaction_id)
 
 if set -q _flag_json
-    set response_format '{"type": "text", "mime_type": "application/json", "schema": {"type": "object", "additionalProperties": true}}'
+    set response_format '{"type": "text", "mime_type": "application/json"}'
 else
     set response_format '{"type": "text", "mime_type": "text/plain"}'
 end
 
 if not test -z $pipe
-    set input '[{"type": "text", "text": "'$pipe'"}, {"type": "text", "text": "'$prompt'"}]'
+    set input '[{"type": "document", "mime_type": "text/plain", "data": "'$pipe'"}, {"type": "text", "text": "'$prompt'"}]'
 else
     set input '"'$prompt'"'
 end
