@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-git add --patch
+git add --patch || exit 1
 git status --short
 
 set git_diff (git diff --staged | string collect)
