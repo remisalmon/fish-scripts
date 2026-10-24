@@ -37,6 +37,10 @@ duckdb (status dirname)/gemini-api.db \
     -c 'create table if not exists logs (created_at timestamp default current_localtimestamp(), model varchar, prompt varchar, response json);' \
     -c 'insert into logs (model, prompt, response) values ($_$'$model'$_$, $_$'$prompt'$_$, $_$'$response'$_$);' &
 
+if test (echo $response | jq -r 'has("error")') = true
+    echo $response | jq -r '.error.message' >&2 && exit 1
+end
+
 set text (echo $response | jq -r '.candidates[0].content.parts[0].text' | string match -v -r "^```" | string collect)
 
 test $text != null && echo $text

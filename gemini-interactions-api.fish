@@ -48,6 +48,10 @@ duckdb (status dirname)/gemini-interactions-api.db \
     -c 'create table if not exists logs (created_at timestamp default current_localtimestamp(), model varchar, prompt varchar, response json);' \
     -c 'insert into logs (model, prompt, response) values ($_$'$model'$_$, $_$'$prompt'$_$, $_$'$response'$_$);' &
 
+if test (echo $response | jq -r 'type') = array
+    echo $response | jq -r '.[0].error.message' >&2 && exit 1
+end
+
 set id (echo $response | jq -r '.id')
 set text (echo $response | jq -r '.steps[-1].content[0].text' | string match -v -r "^```" | string collect)
 
